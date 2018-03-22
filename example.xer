@@ -1,0 +1,40 @@
+import 'module/'
+import 'other/mod.ion'
+
+struct SomeStruct {
+    value: int
+    name: string
+}
+
+func main(args: string[]) {
+
+    //Factorials
+
+    for(i: int; i < args.length; i++) {
+        n := int(args[i])
+        res := factorial(n)
+        println(res)
+    }
+
+    //Struct example
+    var one = SomeStruct{ 1, "One" }
+    var two: SomeStruct = SomeStruct{
+        2                               //No comma, newline is the new comma
+        "Two"
+    }
+
+    //String concatenation, automatic conversion
+    println(that.name + that.value)
+
+}
+
+/*
+    Declaration order does not matter
+    Also... multiline comments, yeah
+*/
+
+func factorial(n: int) : int {
+    if(n <= 1)
+        return 1
+    return n * factorial(n - 1)
+}

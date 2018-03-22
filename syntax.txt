@@ -1,0 +1,92 @@
+# LANGUAGE EBNF RULES
+
+# keywords
+# 'func', 'var', 'int', 'char', 'string', 'struct'
+
+# Syntax
+
+NONZERO = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+ZERO = '0';
+DIGIT = ZERO | NONZERO;
+
+ALPHA =  'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' |
+         'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' |
+         'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' |
+         'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
+ALPHANUM = ALPHA | DIGIT;
+WS = { ' ' | '\t' };
+ASCII = (* any printable ascii character *);
+
+IDENTIFIER = ( ALPHA | '_' ), [ { ALPHANUM | '_' } ];
+
+ESCAPE_SEQ = '\', ( '\' | 'n' | 'r' | 't' | "'" | '"' );
+
+NUMBER_LITERAL = ZERO | ( NONZERO, { DIGIT }, [ '.', { DIGIT} ] );
+CHAR_LITERAL = "'", ( ESCAPE_SEQ | ASCII ), "'";
+STRING_LITERAL = '"', { ESCAPE_SEQ | ASCII }, '"';
+
+TYPE = 'int' | 'char' | 'string' | IDENTIFIER;
+
+NAME_AND_TYPE = IDENTIFIER, ':', TYPE;
+NAME_AND_TYPE_LIST = NAME_AND_TYPE, [{ ( '\n' | ',' ), NAME_AND_TYPE }];
+
+VALUE = NUMBER | IDENTIFIER | STRING_LITERAL | CHAR_LITERAL | FUNCTION_CALL;
+
+#       Operator precedence
+
+#       *  /  %  <<  >>  &
+#       +  -  |  ^
+#       ==  !=  <  <=  >  >=
+#       &&
+#       ||
+
+OP_L4 = '*' | '/' | '%' | '<<' | '>>' | '&';
+OP_L3 = '+' | '-' | '|' | '^';
+OP_L2 = '==' | '!=' | '<' | '<=' | '>' | '>=';
+OP_L1 = '&&';
+OP_L0 = '||';
+
+EXPRESSION_L5 = VALUE | ( '(', EXPRESSION_L0, ')' );
+EXPRESSION_L4 = EXPRESSION_L5, [{ OP_L4, EXPRESSION_L5 }]
+EXPRESSION_L3 = EXPRESSION_L4, [{ OP_L3, EXPRESSION_L4 }]
+EXPRESSION_L2 = EXPRESSION_L3, [{ OP_L2, EXPRESSION_L3 }]
+EXPRESSION_L1 = EXPRESSION_L2, [{ OP_L1, EXPRESSION_L2 }]
+EXPRESSION_L0 = EXPRESSION_L1, [{ OP_L0, EXPRESSION_L1 }]
+EXPRESSION = EXPRESSION_L0
+
+EXPRESSION_LIST = EXPRESSION, [{ ( ',' | '\n' ), EXPRESSION }];
+
+FUNCTION_CALL = IDENTIFIER, '(', [ EXPRESSION_LIST ], ')';
+
+STRUCT_INIT = IDENTIFIER, '{', EXPRESSION_LIST, '}';
+
+REG_ASSIGN = '=';
+DECL_ASSIGN = ':=';
+ADD_ASSIGN = '+=';
+SUB_ASSIGN = '-=';
+MUL_ASSIGN = '*=';
+DIV_ASSIGN = '/=';
+MOD_ASSIGN = '%=';
+XOR_ASSIGN = '^=';
+AND_ASSIGN = '&=';
+OR_ASSIGN = '|=';
+
+ASSIGN = REG_ASSIGN | DECL_ASSIGN | ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN |
+         DIV_ASSIGN | MOD_ASSIGN | XOR_ASSIGN | AND_ASSIGN | OR_ASSIGN;
+
+INITIALIZATION = REG_ASSIGN, EXPRESSION
+SHORT_DECLARATION = IDENTIFIER, DECL_ASSIGN, EXPRESSION
+VAR_DECLARATION = 'var', WS, IDENTIFIER, [ ':', TYPE ], [ INITIALIZATION ]
+DECLARATION = VAR_DECLARATION | SHORT_DECLARATION
+
+ASSIGNMENT = IDENTIFIER, ASSIGN, EXPRESSION
+
+STATEMENT = ( DECLARATION | ASSIGNMENT | FUNCTION_CALL ), ( '\n' | ';' );
+
+STRUCT_DECLARATION = 'struct', WS, IDENTIFIER, '{', NAME_AND_TYPE_LIST, '}';
+FUNCTION_DECLARATION = 'func', WS, IDENTIFIER, '(', [ NAME_AND_TYPE_LIST ], ')', '{', [{ STATEMENT }], '}';
+
+DECLARATION = FUNCTION_DECLARATIONM | STRUCT_DECLARATION | VAR_DECLARATION;
+
+SOURCE = [ IMPORTS ],
+        { DECLARATION };
