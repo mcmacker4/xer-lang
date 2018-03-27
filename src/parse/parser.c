@@ -1,5 +1,9 @@
 #include "parser.h"
 
+#ifndef __forceinline
+#define __forceinline
+#endif
+
 Token token;
 
 __forceinline bool isToken(TokenKind kind) {

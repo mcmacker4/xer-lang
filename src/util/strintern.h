@@ -2,6 +2,7 @@
 #define XERLANG_STRINTERN_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 typedef struct Intern {
     size_t len;

@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <malloc.h>
-#include <process.h>
 
 #define MAX(a, b) ((a) >= (b) ? (a) : (b))
 
