@@ -1,4 +1,9 @@
+#ifdef __MINGW32__
 #include <mem.h>
+#else
+#include <string.h>
+#endif
+
 #include "strintern.h"
 #include "stretchy.h"
 

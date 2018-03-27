@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
-#include "keywords.c"
+#include "keywords.h"
 #include "../util/strintern.h"
 #include "../util/stretchy.h"
 
